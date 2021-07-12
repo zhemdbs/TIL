@@ -1,0 +1,33 @@
+> 변수
+name = "yoon";
+age = 30;
+name 이라는 변수가 다시 사용되지 않기 위해 let, const를 사용
+
+let : 한번 선언 후 다른 값으로 바꿀 수 있음
+const : 절대로 바뀌지 않는 상수, 수정X
+즉, 변수를 선언할때, 변하지 않는 값:const / 변할 수 있는 값 let으로 선언
+
+1. 변수는 문자와 숫자, $와 _만 사용가능
+2. 첫글자는 숫자가 될 수 없음
+3. 예약어 사용X
+4. 가급적 상수는 대문자
+5. 변수명은 읽기 쉽고 이해할 수 있도록 선언
+
+
+> 자료형
+const name = "yoon"; //문자형 string
+ex)
+const name1 = "yoon"
+const name2 = 'yoon'
+const name3 = `yoon` -벡틱
+벡틱은 문자 내부의 변수를 표현할 때 사용 
+const message = `My name is ${name}`;
+
+const age = 30; //숫자형 Number
+console.log(1 + 2); //더하기
+console.log(10 -3); //빼기
+console.log(3 * 2); // * 곱하기
+console.log(6 / 3); // / 나누기
+console.log(6 % 4); // % 나머지(6을 4로 나눈 나머지 값)
+
+//
