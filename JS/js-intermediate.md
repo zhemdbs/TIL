@@ -9,13 +9,13 @@ ________
 - [객체 메소드(object methods), 계산된 프로퍼티(Computed property)](#객체-메소드-계산된-프로퍼티)
 - [심볼(Symbol)](#심볼(Symbol))
 - [숫자, 수학 method (Number, Math)](#숫자-수학)
-- 문자열 메소드 (String methods)
-- 배열 메소드 1(Array methods)
-- 배열 메소드 2(sort, reduce)
-- 구조 분해 할당 (Destructuring assignment)
-- 나머지 매개변수, 전개 구문(Rest parameters, Spread s)
-- 클로저(Closure)
-- setTimeout / setInterval
+- [문자열 메소드 (String methods)](#String)
+- [배열 메소드 1(Array methods)](#Array1-(배열))
+- [배열 메소드 2(sort, reduce)](#Array2-(배열))
+- [구조 분해 할당 (Destructuring assignment)](#구조-분해-할당(Destructuring-assignment))
+- [나머지 매개변수, 전개 구문(Rest parameters, Spread syntax)](#나머지-매개변수-전개구문(Rest-prameters-Spread-syntax))
+- [클로저(Closure)](#클로저(Closure))
+- [setTimeout / setInterval](#setTimeout-/-setInterval)
 - call, apply, bind
 - 상속, 프로토타입(Prototype)
 - 클래스(class)
@@ -23,9 +23,10 @@ ________
 - async, await
 - Generator
 <br/>
+_______
 <br/>
 
-## **변수**
+# ***변수*** 
 
 - ## let
 ```javascript
@@ -121,8 +122,9 @@ console.log(result); //error!
 //유일하게 벗어날 수 없는 스코프가 함수라고 생각하기
 ```
 _____
+<br/>
 
-## **생성자 함수**
+# ***생성자 함수*** 
 
 ```javascript
 //생성자 함수는 첫글자는 대문자로
@@ -172,8 +174,7 @@ item3.showPrice(); //가격은 5000원 입니다.
 ____
 <br/>
 
-
-## **객체 메소드, 계산된 프로퍼티**
+# ***객체 메소드, 계산된 프로퍼티***
 
 - ## 계산된 프로퍼티(Computed property)
 ```javascript
@@ -318,7 +319,7 @@ console.log(obj); //{성별: "male"}
 _____
 <br/>
 
-## 심볼(Symbol)
+# ***심볼(Symbol)***
 
 - ## property key: 문자형
 <br>1. 유일한 식별자를 만들 때 사용
@@ -379,7 +380,7 @@ user[id] //'myid'
 _____
 <br/>
 
-## 숫자, 수학
+# ***숫자, 수학***
 
 - ## toString()
 10진수 -> 2진수/16진수
@@ -543,7 +544,7 @@ Math.sqrt(16); //4
 _____
 <br/>
 
-## String
+# ***String***
 
 - ## length
 ```javascript
@@ -678,9 +679,9 @@ hasCola('콜라'); //금지어
 ```
 
 ___
-<br>
+<br/>
 
-## Array1 (배열)
+# ***Array1 (배열 )***
 
 - ## push() : 뒤에 삽입
 - ## pop() : 뒤에 삭제
@@ -898,9 +899,9 @@ console.log(Array.isArray(userList)); //true
 ```
 
 ___
-<br>
+<br/>
 
-## **Array2 (배열)**
+# ***Array2 (배열 )***
 <br/>
 
 - ## arr.sort()
@@ -987,4 +988,344 @@ let result = userList.reduce((prev, cur) => {
 }, []);
 
 console.log(result); //["tom", "sue"]
+```
+
+___
+<br/>
+
+# ***구조 분해 할당( Destructuring assignment )***
+<br/>
+
+- ## Destructuring assignment
+구조 분해 할당 구문은 배열이나 객체의 속성을 분해해서 그 값을 변수에 담을 수 있게 하는 표현식
+```javascript
+let [x, y] = [1, 2];
+
+console.log(x); //1
+console.log(y); //2
+```
+```javascript
+let users = ['mike', 'tom', 'jane'];
+let [user1, user2, user3] = users;
+
+//let user1 = users[0];
+//let user2 = users[1];
+//let user3 = users[2];
+
+console.log(user1); //'mike'
+console.log(user2); //'tom'
+console.log(user3); //'jane'
+```
+
+- ## 배열 구조 분해 : 기본값
+```javascript
+let [a,b,c] = [1,2];
+//c는 undefined
+
+let [a=3, b=4, c=5] = [1,2]; //기본값을 설정해서 error방지
+console.log(a); //1
+console.log(b); //2
+console.log(c); //5
+```
+
+- ## 배열 구조 분해 : 일부 반환값 무시
+```javascript
+let [user1, ,user2] = ['mike', 'tom', 'jane', 'tony'];
+
+console.log(user1); //'mike'
+console.log(user2); //'jane'
+```
+
+- ## 배열 구조 분해 : 바꿔치기
+```javascript
+let a = 1;
+let b = 2;
+//b에 a값을 넣고 a에 b값을 넣고싶을때
+[a, b] = [b, a];
+```
+
+- ## 객체 구조 분해
+```javascript
+let user = {name: 'mike', age: 30};
+let {name, age} = user; //순서 신경쓰지 않아도 됨
+
+console.log(name); //'mike'
+console.log(age); //30
+```
+
+- ## 객체 구조 분해 : 새로운 변수 이름으로 할당
+```javascript
+let user = {name: 'mike', age: 30};
+let {name: userName, age: userAge} = user;
+
+console.log(userName); //'mike'
+console.log(userAge); //30
+```
+
+- ## 객체 구조 분해 : 기본값
+```javascript
+let user = {name: 'mike', age: 30};
+let {name, age, gender} = user;
+//gender은 아무것도 없기 때문에 undefined
+//그래서 기본값을 줌
+
+let {name, age, gender = 'male'} = user;
+```
+
+___
+<br/>
+
+# ***나머지 매개변수, 전개구문( Rest prameters, Spread syntax )***
+<br/>
+
+- ## 인수 전달
+... (점 3개로 전달)
+```javascript
+function showName(name){ //개수 제한 없음
+  console.log(name);
+}
+showName('mike'); //'mike'
+showName(); //undefined
+```
+
+<br>함수에 인수를 얻는 방법은 두가지
+1. arguments로 접근
+2. 나머지 매개 변수
+
+- ## arguments
+  - 함수로 넘어 온 모든 인수에 접근
+  - 함수내에서 이용 가능한 지역 변수
+  - length / index
+  - Array 형태의 객체
+  - 배열의 내장 메서드 없음 (forEach, map 사용X)
+```javascript
+function showName(name){
+  console.log(arguments.length);
+  console.log(arguments[0]);
+  console.log(arguments[1]);
+}
+
+showName('mike', 'tom');
+//2
+//'mike'
+//'tom'
+```
+
+- ## 나머지 매개변수(Rest parameters)
+정해지지 않은 개수의 인수를 배열로 나타낼 수 있음
+<br>항상 마지막에 있어야 함
+```javascript
+///(...배열이름)
+function showName(...names) {
+  console.log(names);
+}
+
+showName(); //[], undefined가 아님
+showName('mike'); //['mike']
+showName('mike', 'tom'); //['mike', 'tom']
+```
+
+예시
+```javascript
+//전달 받은 모든 수를 더해야함
+
+function add(...numbers) {
+  let result = 0; //초기값 0
+  numbers.forEach(num => (result += num));
+  console.log(result);
+}
+
+add(1, 2, 3); //6
+add(1, 2, 3, 4, 5, 6, 7, 8, 9, 10); //55
+```
+```javascript
+//user 객체를 만들어 주는 생성자 함수를 만듬
+
+function User(name, age, ...skills){
+  this.name = name;
+  this.age = age;
+  this.skills = skills;
+}
+
+const user1 = new User('mike', 30 ,'html', 'css');
+const user2 = new User('tom', 20 ,'JS', 'React');
+const user3 = new User('jane', 10 ,'English');
+
+console.log(user1); //User{name:'mike', age:30, skills:Array(2)}
+console.log(user2); //User{name:'tom', age:20, skills:Array(2)}
+console.log(user3); //User{name:'jane', age:10, skills:Array(1)}
+```
+
+- ## 전개구문(Spread syntac) : 배열
+```javascript
+let arr1 = [1,2,3];
+let arr2 = [4,5,6];
+
+let result = [...arr1, ...arr2];
+//...arr1은 1,2,3을 풀어서 쓴것
+//...arr2은 4,5,6을 풀어서 쓴것
+let result2 = [0, ...arr1, ...arr2, 7, 8, 9];
+//중간에 풀어서 쓴것도 가능
+
+console.log(result); //[1, 2, 3, 4, 5, 6]
+console.log(result2); //[0,1,2,3,4,5,6,7,8,9]
+```
+
+- ## 전개구문(Spread syntac) : 객체
+```javascript
+let user = {name:'mike'}
+let mike = {...user, age:30}
+
+console.log(mike) //{name:'mike', age:30}
+```
+
+- ## 전개구문(Spread syntac) : 복제
+```javascript
+let arr = [1, 2, 3];
+let arr2 = [...arr]; //[1, 2, 3]
+
+let user = {name:'mike', age:30};
+let user2 = {...user};
+
+user2.name = 'tom';
+
+console.log(user.name); //'mike'
+console.log(user2.name); //'tom' 별개로 복제
+```
+예시
+```javascript
+//user에 info를 넣고 fe,lang을 skills로 넣어라
+
+let user = {name: 'yoon'};
+let info = {age:30};
+let fe = {'JS', 'React'};
+let lang = {'korean', 'english'};
+
+user = {
+  ...user,
+  ...info,
+  skills:[...fe, ...lang]
+};
+
+console.log(user);
+// {name:'yoon', age:30, skills:Array(4)}
+```
+
+___
+<br/>
+
+# ***클로저(Closure)***
+<br/>
+
+- ## 어휘적 환경(Lexical Environment)
+함수와 렉시컬 환경의 조합
+<br>함수가 생성될 당시의 외부 변수를 기억
+<br>생성 이후에도 계속 접근 가능
+```javascript
+function makeAdder(x){
+  return function(y){
+    return x + y;
+  }
+}
+
+const add3 = makeAdder(3);
+console.log(add3(2)); //5
+//add3함수가 생성된 이후에도 상위함수인 makeAdder의 x에 접근이 가능
+
+const add10 = makeAdder(10);
+console.log(add10(5)); //15
+console.log(add3(1)); //4
+//add10과 add3은 서로 다른 환경이므로 makeAdder(10)이 호출되지만 add3(1)에는 아무 변화가 없음
+```
+
+___
+<br/>
+
+# ***setTimeout / setInterval***
+<br/>
+
+- ## setTimeout
+일정 시간이 지난 후 함수를 실행
+```javascript
+function fn(){
+  console.log(3)
+}
+
+setTimeout(fn, 3000); //3초후 log를 찍어줌
+```
+setTimeout은 2개의 매개변수를 가짐
+<br>- fn은 일정시간이 지난 뒤 실행하는 함수
+<br>- 3000는 시간(3s)
+```javascript
+//위의 코드는 아래처럼 쓸 수 있음
+setTimeout(function() {
+  console.log(3)
+}, 3000);
+
+//함수를 전달하지 않고 직접 코드를 작성해도 동일 작동
+
+//인수가 필요하다면 시간 뒤에 작성
+//예시
+function showName(name) {
+  console.log(name);
+}
+setTimeout(showName, 3000, 'yoon');
+//yoon는 name의 첫번째 인수로 전달 됨
+```
+
+- ## clearTimeout
+예정 된 작업을 없앰
+```javascript
+const tId = function showName(name) {
+  console.log(name);
+}
+setTimeout(showName, 3000, 'yoon');
+
+clearTimeout(tId); //3초가 지나기전에 실행되기 때문에 아무일도 일어나지 않음
+```
+
+- ## setInterval
+일정 시간 간격으로 함수를 반복
+```javascript
+function showName(name){
+  console.log(name);
+}
+
+const tId = setInterval(show, 300, 'yoon');
+//계속 반복 실행
+//3초마다 'yoon'이 찍힘
+//중간에 중단하려면 clearInterval(tId)를 사용
+```
+예시
+```javascript
+//setInterval, clearInterval
+//user가 접속하면 접속한지 얼마나 지났는지 알려줌
+
+let num = 0;
+
+function showTime() {
+  console.log(`안녕하세요. 접속하신지 ${num++}초가 지났습니다.`);
+}
+
+setInterver(showTime, 1000);//1초에 한번씩 보여줌
+//안녕하세요. 접속하신지 0초가 지났습니다.
+//안녕하세요. 접속하신지 1초가 지났습니다.
+//안녕하세요. 접속하신지 2초가 지났습니다. ++
+---------------------------------------------
+
+//3초까지만 보여주고 싶다면
+let num = 0;
+
+function showTime() {
+  console.log(`안녕하세요. 접속하신지 ${num++}초가 지났습니다.`);
+  if (num > 3) {
+    clearInterval(tId);
+  }
+}
+
+const tId = setInterver(showTime, 1000);
+//안녕하세요. 접속하신지 0초가 지났습니다.
+//안녕하세요. 접속하신지 1초가 지났습니다.
+//안녕하세요. 접속하신지 2초가 지났습니다.
+//안녕하세요. 접속하신지 3초가 지났습니다.
 ```
