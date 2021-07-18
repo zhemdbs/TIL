@@ -1610,3 +1610,277 @@ ___
 <br>어떤 기능을 실행하고 나서 정상적으로 동작하면, 성공의 메시지와 함께 처리된 결과값을 전달해 줌
 <br>그러나 기능을 수행하다 예상치 못한 문제가 발생하면 error를 전달해 줌
 <br>- State: pending(보류)->fulfilled(이행)or rejected(거부)
+```javascript
+const pr = new Promise((resolve, reject) => {
+  //code
+});
+
+//new Promise로 생성함
+//resolve는 성공한 경우, reject는 실패했을때 실행되는 함수
+//어떤일이 완료 된 후 실행되는 함수를 callback함수라고 함
+```
+```
+//resolve
+new Promise                                
+state:pending(대기) --resolve(value)--> funlfilled(이행)
+result:undefined                        result:value
+
+//reject
+new Promise                                
+state:pending(대기) --reject(error)--> rejected(거부)
+result:undefined                       result:error
+```
+
+```javascript
+//resolve
+const pr = new Promise((resolve, reject) => {
+  setTimeour(()=>{
+    resolve('ok')
+  }, 3000)
+}); //pending상태였다가 3초후 fulfilled로 바뀜
+
+pr.then((result) => { //이행 되었을때 실행
+  console.log(result); //ok
+})
+  .catch((err) => { //거부 되었을때 실행
+    console.log(err);
+  })
+  .finally(() => { //이행이든 거부이든 처리가 완료되면 실행
+    console.log('끝') //끝
+  });
+
+
+
+//reject
+const pr = new Promise((resolve, reject) => {
+  setTimeout(()=>{
+    reject(new Error('err..'))
+  }, 3000)
+});//pending상태였다가 3초후 rejected로 바뀜
+
+pr.then((result) => {
+  console.log(result);
+})
+  .catch((err) => {
+    console.log(err); //Error: err....
+  })
+  .finally(() => {
+    console.log('끝') //끝
+  });
+```
+예제
+```javascript
+//프로미스 체이닝(Promises chaining)
+
+const f1 = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('1번 주문 완료');
+    }, 1000);
+  });
+};
+
+const f2 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      rej('xxx');
+    }, 3000);
+  });
+};
+
+const f3 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('3번 주문 완료');
+    }, 2000);
+  });
+};
+
+console.log('시작');
+//프로미스가 연결연결 되는것을
+//프로미스 체이닝(Promises chaining)이라고 함
+f1()
+.then(res => f2(res))
+.then(res => f3(res))
+.then(res => console.log(res))
+.catch(console.log)
+.finally(() => {
+  console.log('끝');
+});
+
+//시작
+//1번 주문 완료
+//xxx
+//끝
+```
+```javascript
+//Promises.all
+//모든 작업이 완료 될때까지 기다림
+const f1 = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('1번 주문 완료');
+    }, 1000);
+  });
+};
+
+const f2 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('2번 주문 완료');
+    }, 3000);
+  });
+};
+
+const f3 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('3번 주문 완료');
+    }, 2000);
+  });
+};
+
+//Promise.all
+Promise.all([f1(), f2(), f3()]).then((res) => {
+  console.log(res);
+});
+//배열부분의 세작업이 모두 완료되어야 then 부분이 실행됨
+//['1번 주문 완료', '2번 주문 완료', '3번 주문 완료']
+```
+```javascript
+//Promises.race
+//하나라도 먼저 완료되면 끝
+const f1 = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('1번 주문 완료');
+    }, 1000);
+  });
+};
+
+const f2 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('2번 주문 완료');
+    }, 3000);
+  });
+};
+
+const f3 = (message) => {
+  console.log(message);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('3번 주문 완료');
+    }, 2000);
+  });
+};
+
+//Promise.race
+Promise.all([f1(), f2(), f3()]).then((res) => {
+  console.log(res);
+});
+//1번 주문 완료
+```
+___
+<br/>
+
+# ***async, await***
+<br/>
+
+- ## async
+promise에 then메서드를 체인 형식으로 호출하는 것 보다 가독성이 좋아짐
+```jacascript
+//함수 앞에 async를 적으면 항상 promise를 반환
+
+async function getName() {
+  return 'mike';
+}
+
+getName().then((name) => {
+  console.log(name); //mike
+});
+```
+
+- ## await
+async 함수 내부에서만 사용 가능
+<br>일반 함수 내부에서 사용하면 에러 발생
+```javascript
+function getName(name) {
+  return new Promise((resolve, reject) => {
+    setTimout(() => {
+      resolve(name);
+    }, 1000);
+  });
+}
+
+async function showName() {
+  const result = await getName('mike');
+  //result에 getName에서 resolve된 값을 await했다가 넣어줌
+  console.log(result);
+}
+
+console.log('시작'); //시작
+showName(); //1초 후에 console.log(result)에서 mike가 찍힘
+```
+```javascript
+const f1 = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('1번 주문 완료');
+    }, 1000);
+  });
+};
+
+const f2 = (message) => {
+  console.log(message); //2. 1번 주문 완료
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('2번 주문 완료');
+    }, 3000);
+  });
+};
+
+const f3 = (message) => {
+  console.log(message); //3. 2번 주문 완료
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res('3번 주문 완료');
+    }, 2000);
+  });
+};
+
+console.log('시작'); //1. 시작
+async function order() {
+  const result1 = await f1();
+  const result2 = await f2(result1);
+  const result3 = await f3(result2);
+  console.log(result3); //3. 3번 주문 완료
+  console.log('종료'); //4. 종료
+}
+order();
+```
+___
+<br/>
+
+# ***Generator***
+<br/>
+
+- ## Generator
+함수의 실행을 중간에 멈췄다가 재개할 수 있는 기능
+<br>function 옆에 *을 쓰고 만들고 내부에 yield키워드 사용
+<br>yield에서 함수 실행 멈출 수 있음
+```javascript
+function* fn() {
+  yield 1;
+  yield 2;
+  yield 3;
+  return 'finish';
+}
+
+const a = fn();
+```
