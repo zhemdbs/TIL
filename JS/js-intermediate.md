@@ -17,7 +17,7 @@ ________
 - [클로저(Closure)](#클로저(Closure))
 - [setTimeout / setInterval](#setTimeout-/-setInterval)
 - call, apply, bind
-- 상속, 프로토타입(Prototype)
+- prototype
 - 클래스(class)
 - 프로미스(Promise)
 - async, await
@@ -69,15 +69,42 @@ var name = 'Mike';
 //name = 'Mike'; //할당
 //로 동작하기 때문
 ```
+|var|let|const|
+|:---------------:|:---------:|:---------:|
+|변수 재선언O|변수 재선언X|변수 재선언X|
+|변수 재할당O|변수 재할당O|변수 재할당X|
+|block scope 무시함|block scope안에서 선언되면 <br/>block scope 안에서만 존재|block scope안에서 선언되면 <br/>block scope 안에서만 존재|
 
 - ## 호이스팅(hoisting)
-<br>let, const, var 모두 호이스팅 됨
-<br>스코프 내부 어디서든 변수 선언은 최상위에 선언된 것 처럼 행동
-<br>error를 내는 이유는 TDZ(Temporal Dead Zone)때문
+  - let, const, var 모두 호이스팅 됨
+  - 어디에 선언되었는지와 상관없이 항상 선언을 제일 위로 끌어올려 주는 것
+<br>- 글로벌 스코프에서 선언되었다면, 스크립트의 제일 위로
+<br>- 함수 스코프에서 선언되었다면, 함수 내에서 제일 위로 끌어올려짐
+  - error를 내는 이유는 TDZ(Temporal Dead Zone)때문
 <br>- TDZ영역에 변수들은 사용할 수 없음
 <br>- let, const는 TDZ의 영향을 받음
 <br>- 할당을 하기 전엔 사용할 수 없음
+```javascript
+//함수 호이스팅은 함수 선언식의 경우에만 적용
+//함수 표현식에는 적용(x)
+
+//함수 선언식
+function funcDeclaration() {
+  return 'A function declaration';
+}
+
+//함수 표현식
+const funcExpression = function() {
+  return 'A function expression';
+}
+```
 <br/>
+
+- ## Scope(스코프)
+'밖에서는 안을 볼 수 없지만 안에서는 밖을 볼 수 있다'라는 문장 하나로 설명이 가능
+<br>- 부모 함수는 자식 함수 안의 변수에 접근할 수 없지만, 자식 함수는 밖의 변수에 접근이 가능
+
+
 <br/>
 
 - ## 변수의 생성과정
@@ -1217,6 +1244,9 @@ ___
 # ***클로저(Closure)***
 <br/>
 
+- ## 클로저
+중첩된 함수에서 자식의 함수가 부모 함수에 정의된 변수에 접근이 가능한 것들을 클로저라함
+
 - ## 어휘적 환경(Lexical Environment)
 함수와 렉시컬 환경의 조합
 <br>함수가 생성될 당시의 외부 변수를 기억
@@ -1276,10 +1306,10 @@ setTimeout(showName, 3000, 'yoon');
 - ## clearTimeout
 예정 된 작업을 없앰
 ```javascript
-const tId = function showName(name) {
+function showName(name) {
   console.log(name);
 }
-setTimeout(showName, 3000, 'yoon');
+const tId = setTimeout(showName, 3000, 'yoon');
 
 clearTimeout(tId); //3초가 지나기전에 실행되기 때문에 아무일도 일어나지 않음
 ```
@@ -1329,3 +1359,254 @@ const tId = setInterver(showTime, 1000);
 //안녕하세요. 접속하신지 2초가 지났습니다.
 //안녕하세요. 접속하신지 3초가 지났습니다.
 ```
+___
+<br/>
+
+# ***call, apply, bind***
+<br/>
+
+- ## ***call, apply, bind***
+함수 호출 방식과 관계없이 this를 지정할 수 있음
+
+- ## call
+모든 함수에서 사용할 수 있으며, this를 특정값으로 지정할 수 있음
+```javascript
+const mike = {
+  name: 'mike'
+};
+const tom = {
+  name: 'tom'
+};
+
+function showThisName(){
+  console.log(this.name);
+  //this는 window를 가르킴
+}
+
+showThisName(); //window.name이 빈문자열이라 아무것도 안나타남
+showThisName.call(mike); //mike
+//함수를 호출하면서 call사용, this를 사용할 객체mike를 넘기면 해당 함수가 주어진 객체의 메소드처럼 사용
+showThisName.call(tom); //tom
+```
+```javascript
+const mike = {
+  name: 'mike'
+};
+const tom = {
+  name: 'tom'
+};
+
+function showThisName(){
+  console.log(this.name);
+}
+function update(birthYear, occupation){
+  this.birthYear = birthYear;
+  this.occupation = occupation;
+}
+
+update.call(mike, 1999, 'singer')
+
+console.log(mike); //{name:'mike', birthYear:1999, occupation:'singer'}
+```
+
+- ## apply
+함수 매개변수를 처리하는 방법을 제외하면 call과 완전히 같음
+<br>call은 일반적인 함수와 마찬가지로 매개변수를 직접 받지만, apply는 매개변수를 배열로 받음
+```javascript
+const mike = {
+  name: 'mike'
+};
+const tom = {
+  name: 'tom'
+};
+
+function showThisName(){
+  console.log(this.name);
+}
+function update(birthYear, occupation){
+  this.birthYear = birthYear;
+  this.occupation = occupation;
+}
+
+update.apply(mike, [1999, 'singer'])
+console.log(mike); //{name:'mike', birthYear:1999, occupation:'singer'}
+```
+
+- ## bind
+함수를 호출하는 것이 아니라 this가 바인딩 된 새로운 함수를 리턴함
+```javascript
+const mike = {
+  name: 'mike'
+};
+
+function update(birthYear, occupation){
+  this.birthYear = birthYear;
+  this.occupation = occupation;
+}
+
+const updateMike = update.bind(mike); //항상 this를 mike로받음
+
+updateMike(1980, 'police');
+console.log(mike); //{name:'mike', birthYear: 1980, occupation:'police'}
+```
+
+예제
+```javascript
+const user = {
+  name: 'mike',
+  showName : function() {
+    console.log(`hello, $(this.name)`);
+  },
+};
+
+user.showName(); //hello, Mike
+
+let fn = user.showName;
+
+fn.call(user); //hello, Mike
+fn.apply(user); //hello, Mike
+
+let boundFn = fn.bind(user);
+
+boundFn(); //hello, Mike
+```
+
+___
+<br/>
+
+# ***프로토타입(prototype)***
+
+- ## 프로토타입 
+자바스크립트는 프로토타입을 기반으로 상속을 구현하여 불필요한 중복을 제거함
+<br>생성자 함수가 생성할 모든 인스턴스가 공통적으로 사용할 property나 method를 프로토타입에 미리 구현해둠으로써 인스턴스가 또 구현하는게 아니라 부모 object의 프로토타입의 자산을 공유해서 사용할 수 있음
+
+- ## 프로토타입 체인
+특정 객체의 메서드나 프로퍼티에 접근하고자 할때, 해당 객체에 접근하려고 하는 프로퍼티나 객체가 없다면, 프로토타입 링크([[Prototype]]프로퍼티)를 따라 자신의 부모 역할을 하는 프로토타입 객체를 차례로 검색함
+___
+<br/>
+
+# ***클래스***
+<br/>
+
+- ## 클래스
+object를 만글기 위한 템플릿
+<br>- 템플릿이기 때문에 그 자체는 메모리상에 올라가지 않고, 실제로 데이터를 넣어서 object가 만들어지면 그 object가 메모리에 올라감
+<br>- class는 연관 있는 fields(변수, 속성)와 methods(함수)로 이루어져 있음
+```javascript
+class User {
+  constructor(name, age) {
+    this.name = name;
+    this.age = agel
+  }
+  showName() {
+    console.log(this.name); //User {name:'tom', age:19}
+  }
+}
+
+const tom = new User('tom', 19)
+```
+
+- ## extends
+클래스에서 상속은 extends 사용
+```javascript
+class Car {
+  constructor(color){
+    this.color = color;
+    this.wheels = 4;
+  }
+  drive() {
+    console.log('drive..');
+  }
+  stopr() {
+    console.log('stop!');
+  }
+
+  class Bmw extends Car {
+    park() {
+      console.log('park');
+    }
+  }
+}
+const z4 = new Bmw('blue');
+
+//콘솔에 z4를 적으면
+//Bmw{color:'blue', wheels:4}를 클릭 //z4객체에서 찾고
+//__proto__:Car //proto타입에서 찾아보고 없으면
+//constructor: class Bmw
+//park: f park()
+//__proto__: //또 proto타입에서 찾음
+//constructor: class Car
+//drive: f drive()
+//stop: f stop()
+//__proto__:Object
+```
+
+- ## 메소드 오버라이딩
+```javascript
+//Bmw내부에 Car에서 정의한 메소드와 동일한 이름의 메소드가 있을 경우
+class Car {
+  constructor(color){
+    this.color = color;
+    this.wheels = 4;
+  }
+  drive() {
+    console.log('drive..');
+  }
+  stop() {
+    console.log('stop!');
+  }
+
+  class Bmw extends Car {
+    park() {
+      console.log('park');
+    }
+    stop() {
+      console.log('off');
+    }
+    // stop() { //부모의 메소드를 그대로 사용하고 확장하고 싶다면
+    //   super.stop();//Car의 stop을 사용
+    //   console.log('off');
+    // }
+  }
+}
+
+//콘솔에 z4.stop();을 입력하면 off가 뜸
+//동일한 이름으로 메소드를 정의하면 덮어씀
+```
+
+- ## 오버라이딩
+```javascript
+class Car {
+  constructor(color){
+    this.color = color;
+    this.wheels = 4;
+  }
+  drive() {
+    console.log('drive..');
+  }
+  stopr() {
+    console.log('stop!');
+  }
+
+  class Bmw extends Car {
+    constructor(color){
+      super(color);
+      this.navigation = 1;
+    }
+    park() {
+      console.log('park');
+    }
+  }
+}
+```
+___
+<br/>
+
+# ***Promise***
+<br/>
+
+- ## promise
+비동기 코드를 간편하게 처리할 수 있도록 도와주는 Object
+<br>어떤 기능을 실행하고 나서 정상적으로 동작하면, 성공의 메시지와 함께 처리된 결과값을 전달해 줌
+<br>그러나 기능을 수행하다 예상치 못한 문제가 발생하면 error를 전달해 줌
+<br>- State: pending(보류)->fulfilled(이행)or rejected(거부)
