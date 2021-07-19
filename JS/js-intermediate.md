@@ -1872,8 +1872,14 @@ ___
 
 - ## Generator
 함수의 실행을 중간에 멈췄다가 재개할 수 있는 기능
-<br>function 옆에 *을 쓰고 만들고 내부에 yield키워드 사용
-<br>yield에서 함수 실행 멈출 수 있음
+<br>- function 옆에 *을 쓰고 만들고 내부에 yield키워드 사용
+<br>- yield에서 함수 실행 멈출 수 있음
+<br>- 외부로 부터 값을 입력받을 수 있음
+<br>- 값을 미리 만들어 두지 않음
+<br/>
+<br/>***장점***
+<br/>다른 작업을 하다가 다시 돌아와서 next( ) 해주면 진행이 멈췄던 부분 부터 이어서 실행
+<br/>
 ```javascript
 function* fn() {
   yield 1;
@@ -1883,4 +1889,195 @@ function* fn() {
 }
 
 const a = fn();
+```
+
+- ## Generator : next( )
+
+```javascript
+//generator객체는 next메소드가 있음
+
+function* fn(){
+  console.log(1);
+  yield 1;
+  console.log(2);
+  yield 2;
+  console.log(3);
+  console.log(4);
+  yield 3;
+  return 'finish';
+}
+const a = fn();
+
+//generator함수를 실행하면 generator객체만 반환되고 함수 본문코드는 실행되지 않음
+//콘솔에 a.next();로 호출하면
+//가장 가까운 yield문을 만날때까지 실행되고 데이터 객체 반환
+
+a.next();
+1 {value:1, done: false} 
+//value는 yield오른쪽 값(값을 생략한다면 undifined)
+//done은 함수 코드가 끝났는지 나타내고 실행이 끝났으면 true, 아니면 false
+
+a.next();
+2 {value:2, done: false}
+a.next();
+3 4 {value:3, done: false}
+a.next();
+{value:'finish', done: true} //이제 끝났다는 뜻
+a.next();
+{value:undefined, done: true}
+```
+```javascript
+//next( )에 인수 전달
+function* fn() {
+  const num1 = yield '첫번째 숫자를 입력해주세요';
+  console.log(num1);
+
+  const num2 = yield '두번째 숫자를 입력해주세요';
+  console.log(num2);
+
+  return num1 + num2;
+}
+const a = fn();
+
+//콘솔에서
+
+a.next();
+{value:'첫번째 숫자를 입력해주세요', done:false}
+
+a.next(2); //인수를 넣으면 인수숫자는 num1에 저장
+2 //console.log(num1)을 통해 보여줌
+{value:'두번째 숫자를 입력해주세요', done:false}
+
+a.next(4);
+4 //console.log(num2)
+{value:6, done:true} //value는 num1 + num2 값
+```
+
+- ## Generator : return( )
+```javascript
+function* fn(){
+  console.log(1);
+  yield 1;
+  console.log(2);
+  yield 2;
+  console.log(3);
+  console.log(4);
+  yield 3;
+  return 'finish';
+}
+const a = fn();
+
+a.next();
+1 {value:1, done: false} 
+//동일한 코드에서 실행하다가
+
+a.return('END'); //를 실행하면
+{value:'END', done:true} //그 즉시 done속성값이 true가 됨
+//이후에 next를 실행해도 value얻어올수없고 done
+```
+  
+
+- ## Generator : throw( )
+
+```javascript
+function* fn(){
+  try { //try, catch : 예외처리
+    console.log(1);
+    yield 1;
+    console.log(2);
+    yield 2;
+    console.log(3);
+    console.log(4);
+    yield 3;
+    return 'finish';
+  } catch (e) {
+    console.log(e);
+  }
+}
+const a = fn();
+
+a.next();
+1 {value:1, done: false}
+a.next();
+2 {value:2, done: false} 를 하다가
+
+//a. throw(new Error('err'))를 실행하면
+//Error:err {value:undefined, done:true}
+//catch문에 있는 내용 실행되면서 에러가 찍히고 done은 true
+```
+
+- ## Generator : iterable
+반복이 가능하다는 의미
+<br>- 조건
+<br>1. Symbol.iterator 메서드가 있음
+<br>2. Symbol.iterator는 iterator를 반환해야 한다
+
+- ## Generator : iterator
+메서드를 호출한 결과
+<br>- 조건
+<br>1. next 메서드를 가짐
+<br>2. next 메서드는 value와 done 속성을 가진 객체를 반환
+<br>3. 작업이 끝나면 done은 true가 됨
+
+```javascript
+const arr = [1, 2, 3, 4, 5];
+
+//콘솔에서
+
+const it = arr[Symbol.iterator]();
+
+it.next();
+{value:1, done:false}
+it.next();
+{value:2, done:false}
+...
+it.next();
+{value:5, done:false}
+it.next();
+{value:undefined, done:true}
+
+//배열은 Symbol.iterator메소드를 갖고 있고, 이 메소드가 반환하는 값이 iterator이므로 iterable하다고 할 수 있음
+
+//즉, 배열은 반복 가능한 개체
+```
+```javascript
+//iterable은 for of를 이용해서 순회할 수 있음
+
+const arr = [1, 2, 3, 4, 5];
+
+//콘솔에서
+
+for(let num of arr){
+  console.log(num)
+};
+
+1
+2
+3
+4
+5
+undefined
+```
+```javascript
+//yield를 이용
+
+function* gen1() {
+  yield "w";
+  yield "o";
+  yield "r";
+  yield "l";
+  yield "d";
+}
+
+function* gen2() {
+  yield "Hello";
+  yield* gen1();
+  yield "!";
+}
+
+//콘솔에
+
+console.log(...gen2());
+Hello, w o r l d ! //가 찍혀 나옴
+//true가 될때까지 값을 펼쳐줌
 ```
